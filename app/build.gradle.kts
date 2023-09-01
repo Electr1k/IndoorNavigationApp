@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.indoor_navigation"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.indoor_navigation"
@@ -70,7 +70,8 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("androidx.core:core-splashscreen:1.0.0")
 
+    implementation("androidx.compose.material:material-android:1.6.0-alpha04")
     implementation("com.google.accompanist:accompanist-pager:0.14.0") // Pager
     implementation("com.google.accompanist:accompanist-pager-indicators:0.14.0") // Pager Indicators
-    implementation("ovh.plrapps:mapcompose:2.8.1") // Map
+    implementation("ovh.plrapps:mapcompose:2.6.0") // Map
 }
