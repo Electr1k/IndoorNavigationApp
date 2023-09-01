@@ -72,5 +72,5 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-pager:0.14.0") // Pager
     implementation("com.google.accompanist:accompanist-pager-indicators:0.14.0") // Pager Indicators
-
+    implementation("ovh.plrapps:mapcompose:2.8.1") // Map
 }
