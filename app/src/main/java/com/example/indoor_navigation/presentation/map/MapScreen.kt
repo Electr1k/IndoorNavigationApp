@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +31,13 @@ import com.example.indoor_navigation.presentation.navigation.Screen
 import com.example.indoor_navigation.presentation.sheet_content.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ovh.plrapps.mapcompose.api.addLayer
+import ovh.plrapps.mapcompose.api.enableRotation
+import ovh.plrapps.mapcompose.core.TileStreamProvider
+import ovh.plrapps.mapcompose.ui.MapUI
+import ovh.plrapps.mapcompose.ui.state.MapState
+import java.io.File
+import java.io.FileInputStream
 
 
 @SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
@@ -55,6 +63,7 @@ fun MapScreen(
     showBottomBar.value = isHigh.value // если открыт, убираем бар навигации
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
+    val context = LocalContext.current
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -111,23 +120,62 @@ fun MapScreen(
             // Вынести во view model!!!!
             //
             // ====   ====   ===    ====
-//            val tileStreamProvider = TileStreamProvider { row, col, zoomLvl ->
-//                FileInputStream(File("path/{$zoomLvl}/{$row}/{$col}.jpg")) // or it can be a remote HTTP fetch
-//            }
-//
-//            val state: MapState by mutableStateOf(
-//                MapState(4, 4096, 4096).apply {
-//                    addLayer(tileStreamProvider)
-//                    enableRotation()
-//                }
-//            )
-//            MapUI(Modifier, state = state)
+            val tileStreamProvider = TileStreamProvider { row, col, zoomLvl ->
+                try {
+                    context.assets?.open("tiles/mont_blanc/$zoomLvl/$row/$col.jpg")
+                } catch (e: Exception) {
+                    println("Не найдено")
+                    null
+                }
+            }
 
-            Column(
+            val state: MapState by mutableStateOf(
+                MapState(4, 4096, 4096).apply {
+                    addLayer(tileStreamProvider)
+                    enableRotation()
+                }
+            )
+            MapUI(Modifier.fillMaxSize(), state = state)
+            Box(Modifier.zIndex(1f)){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(top = 40.dp, end = 10.dp), contentAlignment = Alignment.CenterEnd
+                ) {
+                    Box(modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .widthIn(0.dp, 150.dp)
+                        .background(White)
+                        .clickable {
+                            scope.launch {
+                                // Если, не в карте открыт лист, его небходимо закрыть
+                                if (sheetState.isExpanded && currentScreen.value == Screen.Map) {
+                                    sheetState.collapse()
+                                }
+                                navigateByRoute(Screen.Location.route, null, true)
+                                sheetState.expand()
+                            }
+                        }
+                        .padding(horizontal = 15.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center) {
+                        Text(
+                            text = currentLocation.value,
+                            color = Black,
+                            fontSize = 18.sp,
+                            fontWeight = W500,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+            /*Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color(0xFFECECEC))
-//                    .paint(painter = painterResource(id = R.drawable.map_background))
+                    .paint(painter = painterResource(id = R.drawable.map_background))
                     .clickable(
                         // отключаем анимацию нажатия (кринж)
                         interactionSource = remember { MutableInteractionSource() },
@@ -172,7 +220,7 @@ fun MapScreen(
                         )
                     }
                 }
-            }
+            }*/
                 /*Row(
                     modifier = Modifier
                         .fillMaxWidth()
