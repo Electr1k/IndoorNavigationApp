@@ -104,25 +104,24 @@ fun LocationSheetContent(
                             .padding(bottom = 60.dp)
                     ) {
                         item {
-                            repeat(5) {
-                                LocationCard(
-                                    title = "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г",
-                                    address = "Некрасовский, д. 44",
-                                    selected = targetLocation.value == "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г",
-                                    onClick = { targetLocation.value =  "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г"}
-                                )
-                                LocationCard(
-                                    title = "ЮФУ Корпус Д",
-                                    address = "Некрасовский, д. 44",
-                                    targetLocation.value == "ЮФУ Корпус Д",
-                                    { targetLocation.value = "ЮФУ Корпус Д" }
-                                )
-                                LocationCard(
-                                    title = "СКБ «КИТ»",
-                                    address = "Тургеневский, д. 44",
-                                    targetLocation.value == "СКБ «КИТ»",
-                                    { targetLocation.value = "СКБ «КИТ»" }
-                                )
+                            LocationCard(
+                                title = "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г",
+                                address = "Некрасовский, д. 44",
+                                selected = targetLocation.value == "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г",
+                                onClick = { targetLocation.value =  "ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г ЮФУ Корпус Г"}
+                            )
+                            LocationCard(
+                                title = "ЮФУ Корпус Д",
+                                address = "Некрасовский, д. 44",
+                                targetLocation.value == "ЮФУ Корпус Д",
+                                { targetLocation.value = "ЮФУ Корпус Д" }
+                            )
+                            LocationCard(
+                                title = "СКБ «КИТ»",
+                                address = "Тургеневский, д. 44",
+                                targetLocation.value == "СКБ «КИТ»",
+                                { targetLocation.value = "СКБ «КИТ»" }
+                            )
 //                                LocationCard(
 //                                    title = "Покровка",
 //                                    address = "Покровский бульвар 11",
@@ -147,7 +146,6 @@ fun LocationSheetContent(
 //                                    targetLocation.value == "Ордынка",
 //                                    { targetLocation.value = "Ордынка" }
 //                                )
-                            }
                         }
                     }
 

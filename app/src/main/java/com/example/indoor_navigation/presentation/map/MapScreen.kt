@@ -33,6 +33,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.enableRotation
+import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.MapUI
 import ovh.plrapps.mapcompose.ui.state.MapState
@@ -56,14 +57,14 @@ fun MapScreen(
                      isInclusive: Boolean
     ) -> Unit,
     popBackNavStack: () -> Unit,
-    isHigh: MutableState<Boolean>
+    isHigh: MutableState<Boolean>,
+    mapState: MapState
 ){
 
     //val isHigh = remember { mutableStateOf(true) } // спрятан ли bottom sheet
     showBottomBar.value = isHigh.value // если открыт, убираем бар навигации
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
-    val context = LocalContext.current
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -113,29 +114,8 @@ fun MapScreen(
             }
         }
     ) {
-        Box{
-
-            // ====   ====   ===    ====
-            //
-            // Вынести во view model!!!!
-            //
-            // ====   ====   ===    ====
-            val tileStreamProvider = TileStreamProvider { row, col, zoomLvl ->
-                try {
-                    context.assets?.open("tiles/mont_blanc/$zoomLvl/$row/$col.jpg")
-                } catch (e: Exception) {
-                    println("Не найдено")
-                    null
-                }
-            }
-
-            val state: MapState by mutableStateOf(
-                MapState(4, 4096, 4096).apply {
-                    addLayer(tileStreamProvider)
-                    enableRotation()
-                }
-            )
-            MapUI(Modifier.fillMaxSize(), state = state)
+        Box(Modifier.background(Color(0xFFEFEFEF))){
+            MapUI(Modifier.fillMaxSize(), state = mapState)
             Box(Modifier.zIndex(1f)){
                 Box(
                     modifier = Modifier
@@ -284,24 +264,4 @@ fun MapScreen(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@SuppressLint("UnrememberedMutableState")
-@Composable
-@Preview
-fun PreviewMapScreen() {
-    MapScreen(
-        showBottomBar = remember {mutableStateOf(true)},
-        navigateToMap = {},
-        sheetState = rememberBottomSheetState(initialValue = Collapsed),
-        scope = rememberCoroutineScope(),
-        currentLocation = remember {
-            mutableStateOf("Gs")
-        },
-        currentScreen = mutableStateOf(Screen.Map),
-        navigateByRoute = {_,_,_ -> },
-        popBackNavStack = { },
-        isHigh = mutableStateOf(true)
-    )
 }

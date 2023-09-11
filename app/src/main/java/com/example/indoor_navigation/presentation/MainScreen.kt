@@ -1,6 +1,7 @@
 package com.example.indoor_navigation.presentation
 
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.indoor_navigation.presentation.common_components.bottom_bar.BottomBarItem
@@ -19,12 +21,18 @@ import com.example.indoor_navigation.presentation.map.MapScreen
 import com.example.indoor_navigation.presentation.navigation.NavigationGraph
 import com.example.indoor_navigation.presentation.navigation.Screen
 import kotlinx.coroutines.launch
+import ovh.plrapps.mapcompose.api.addLayer
+import ovh.plrapps.mapcompose.api.enableRotation
+import ovh.plrapps.mapcompose.core.TileStreamProvider
+import ovh.plrapps.mapcompose.ui.state.MapState
 
 
-
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainScreen(){
+fun MainScreen(
+    mapState: MapState
+){
     val navController = rememberNavController()
     val showBottomBar = remember{ mutableStateOf(true) }
     val scope = rememberCoroutineScope()
@@ -38,6 +46,9 @@ fun MainScreen(){
             } ?: Screen.Splash
         }
     }
+
+
+
 
 //    println("${sheetState.currentValue} ${sheetState.isCollapsed} ${sheetState.isExpanded} ${sheetState.progress} ${sheetState.currentValue.ordinal} ${sheetState.targetValue}")
 //    println("Current screen ${currentScreen.value.route}")
@@ -115,7 +126,8 @@ fun MainScreen(){
                     navigateToMap = { navigateByRoute(route = Screen.Map.route) },
                     navigateByRoute = {route, popUpRoute,isInclusive-> navigateByRoute(route,popUpRoute, isInclusive) },
                     popBackNavStack = { popBackNavStack() },
-                    isHigh = isHigh
+                    isHigh = isHigh,
+                    mapState = mapState
                 )
                 NavigationGraph(
                     navController = navController,
