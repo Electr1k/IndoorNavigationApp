@@ -2,16 +2,13 @@ package com.example.indoor_navigation.presentation.map
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.BottomSheetValue.Collapsed
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -20,10 +17,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.R
 import com.example.indoor_navigation.presentation.common_components.BottomSheetTop
 import com.example.indoor_navigation.presentation.common_components.WorkInProgressScreen
@@ -31,14 +28,7 @@ import com.example.indoor_navigation.presentation.navigation.Screen
 import com.example.indoor_navigation.presentation.sheet_content.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ovh.plrapps.mapcompose.api.addLayer
-import ovh.plrapps.mapcompose.api.enableRotation
-import ovh.plrapps.mapcompose.api.scale
-import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.MapUI
-import ovh.plrapps.mapcompose.ui.state.MapState
-import java.io.File
-import java.io.FileInputStream
 
 
 @SuppressLint("CoroutineCreationDuringComposition", "UnrememberedMutableState")
@@ -48,20 +38,19 @@ fun MapScreen(
     showBottomBar: MutableState<Boolean>,
     sheetState: BottomSheetState,
     scope: CoroutineScope,
-    currentLocation: MutableState<String>,
     currentScreen: State<Screen>,
-    navigateToMap: () -> Unit,
     navigateByRoute: (
         route: String,
         popUpRoute: String?,
-                     isInclusive: Boolean
+        isInclusive: Boolean
     ) -> Unit,
     popBackNavStack: () -> Unit,
-    isHigh: MutableState<Boolean>,
-    mapState: MapState
+    vm: MainViewModel
 ){
 
-    //val isHigh = remember { mutableStateOf(true) } // спрятан ли bottom sheet
+    val isHigh = vm.isHigh
+    val currentLocation = vm.currentLocation
+
     showBottomBar.value = isHigh.value // если открыт, убираем бар навигации
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
@@ -71,9 +60,9 @@ fun MapScreen(
         sheetContent = {
             currentScreen.let {
                 when (currentScreen.value) {
-                    Screen.Map -> MapSheetContent(sheetState, isHigh, scope)
+                    Screen.Map -> MapSheetContent(sheetState, vm, scope)
                     Screen.Search -> SearchSheetContent(sheetState, scope, popBackNavStack)
-                    Screen.Location -> LocationSheetContent(sheetState, scope, currentLocation, popBackNavStack = popBackNavStack)
+                    Screen.Location -> LocationSheetContent(sheetState, scope, vm, popBackNavStack)
                     Screen.Route -> RouteSheetContent(
                         bottomSheetState = sheetState,
                         scope = scope,
@@ -115,7 +104,7 @@ fun MapScreen(
         }
     ) {
         Box(Modifier.background(Color(0xFFEFEFEF))){
-            MapUI(Modifier.fillMaxSize(), state = mapState)
+            MapUI(Modifier.fillMaxSize(), state = vm.state.value)
             Box(Modifier.zIndex(1f)){
                 Box(
                     modifier = Modifier
@@ -151,96 +140,6 @@ fun MapScreen(
                     }
                 }
             }
-            /*Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFECECEC))
-                    .paint(painter = painterResource(id = R.drawable.map_background))
-                    .clickable(
-                        // отключаем анимацию нажатия (кринж)
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        isHigh.value = true
-                        scope.launch { sheetState.collapse() }
-                    },
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(top = 40.dp, end = 10.dp), contentAlignment = Alignment.CenterEnd
-                ) {
-                    Box(modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .widthIn(0.dp, 150.dp)
-                        .background(White)
-                        .clickable {
-                            scope.launch {
-                                // Если, не в карте открыт лист, его небходимо закрыть
-                                if (sheetState.isExpanded && currentScreen.value == Screen.Map) {
-                                    sheetState.collapse()
-                                }
-                                navigateByRoute(Screen.Location.route, null, true)
-                                sheetState.expand()
-                            }
-                        }
-                        .padding(horizontal = 15.dp, vertical = 10.dp),
-                        contentAlignment = Alignment.Center) {
-                        Text(
-                            text = currentLocation.value,
-                            color = Black,
-                            fontSize = 18.sp,
-                            fontWeight = W500,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 2,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }*/
-                /*Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 30.dp)
-                        .padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(LightGreen)
-                            .height(100.dp)
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Text(text = "Осталось пройти", color = White, fontSize = 16.sp)
-                        Text(text = "32м", color = White, fontSize = 28.sp)
-                        Spacer(modifier = Modifier.height(15.dp))
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(LightGreen)
-                            .height(100.dp)
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Text(text = "Конечная точка", color = White, fontSize = 16.sp)
-                        Text(text = "Г-317", color = White, fontSize = 20.sp)
-                        Text(text = "Корпус Г", color = White, fontSize = 18.sp)
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                }*//*
-                Spacer(modifier = Modifier.weight(.4f))
-                Spacer(modifier = Modifier.weight(.4f))
-            }*/
             Box(
                 Modifier
                     .fillMaxSize()

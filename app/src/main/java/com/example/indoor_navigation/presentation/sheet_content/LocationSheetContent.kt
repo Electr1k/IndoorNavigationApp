@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.R
 import com.example.indoor_navigation.presentation.common_components.BottomSheetTop
 import com.example.indoor_navigation.presentation.common_components.LocationCard
@@ -32,11 +34,11 @@ import kotlinx.coroutines.launch
 fun LocationSheetContent(
     bottomSheetState: BottomSheetState,
     scope: CoroutineScope,
-    currentLocation: MutableState<String>,
+    vm: MainViewModel,
     popBackNavStack: () -> Unit
 ){
     val targetLocation = remember {
-        mutableStateOf(currentLocation.value)
+        mutableStateOf(vm.currentLocation.value)
     }
 
     BackHandler {
@@ -119,33 +121,8 @@ fun LocationSheetContent(
                             LocationCard(
                                 title = "СКБ «КИТ»",
                                 address = "Тургеневский, д. 44",
-                                targetLocation.value == "СКБ «КИТ»",
-                                { targetLocation.value = "СКБ «КИТ»" }
-                            )
-//                                LocationCard(
-//                                    title = "Покровка",
-//                                    address = "Покровский бульвар 11",
-//                                    targetLocation.value == "Покровка",
-//                                    { targetLocation.value = "Покровка" }
-//                                )
-//                                LocationCard(
-//                                    title = "Шаболовка",
-//                                    address = "улица Шаболовка 26с3",
-//                                    targetLocation.value == "Шаболовка",
-//                                    { targetLocation.value = "Шаболовка" }
-//                                )
-//                                LocationCard(
-//                                    title = "Мясницкая",
-//                                    address = "Мясницкая улица 11, 20; Кривоколенный переулок 3,3а; Армянский переулок 4/2",
-//                                    targetLocation.value == "Мясницкая",
-//                                    { targetLocation.value = "Мясницкая" }
-//                                )
-//                                LocationCard(
-//                                    title = "Ордынка",
-//                                    address = "улица Малая Ордынка 29",
-//                                    targetLocation.value == "Ордынка",
-//                                    { targetLocation.value = "Ордынка" }
-//                                )
+                                targetLocation.value == "СКБ «КИТ»"
+                            ) { targetLocation.value = "СКБ «КИТ»" }
                         }
                     }
 
@@ -160,7 +137,7 @@ fun LocationSheetContent(
                             .fillMaxWidth()
                             .padding(horizontal = 25.dp, vertical = 10.dp)
                             .clickable {
-                                currentLocation.value = targetLocation.value
+                                vm.setLocation(targetLocation.value)
                                 scope.launch {
                                     bottomSheetState.collapse()
                                 }
@@ -185,9 +162,10 @@ fun LocationSheetContent(
 @Preview
 @Composable
 fun PreviewLocation(){
-    LocationSheetContent(scope = rememberCoroutineScope(), bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
-        currentLocation = remember {
-        mutableStateOf("")
-    },
-    popBackNavStack = {})
+    LocationSheetContent(
+        scope = rememberCoroutineScope(),
+        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        vm = hiltViewModel(),
+        popBackNavStack = {}
+    )
 }

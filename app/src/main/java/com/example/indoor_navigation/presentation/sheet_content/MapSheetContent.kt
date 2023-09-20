@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.R
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -28,11 +29,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
-fun MapSheetContent(sheetState: BottomSheetState, isHigh: MutableState<Boolean>, scope: CoroutineScope){
+fun MapSheetContent(
+    sheetState: BottomSheetState,
+    vm: MainViewModel,
+    scope: CoroutineScope
+){
+    val isHigh by vm.isHigh
+
     BackHandler {
-        if (!isHigh.value) scope.launch {
+        if (!isHigh) scope.launch {
             if (sheetState.isExpanded) sheetState.collapse()
-            else isHigh.value = true }
+            else vm.setHigh(true)
+        }
     }
     Column(
         modifier = Modifier
@@ -164,7 +172,7 @@ fun MapSheetContent(sheetState: BottomSheetState, isHigh: MutableState<Boolean>,
                             .size(25.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .clickable {
-                                isHigh.value = true
+                                vm.setHigh(true)
                                 scope.launch { sheetState.collapse() }
                             }
                     )

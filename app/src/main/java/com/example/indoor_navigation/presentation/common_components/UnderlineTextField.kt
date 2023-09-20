@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -46,7 +47,6 @@ fun UnderlineTextField(
     isUncorrected: Boolean = false,
     keyboardController: SoftwareKeyboardController? = null,
     maxLines: Int = 1,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
     onDoneKey: (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions(
@@ -60,17 +60,9 @@ fun UnderlineTextField(
         }
     ),
     textMessage: String? = null,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    withBorder:Boolean = false
 ) {
-    fun placeholderVisualTransformation(): TransformedText {
-        val annotatedString = AnnotatedString.Builder().run {
-            pushStyle(SpanStyle(color = DarkGrey, fontSize = 18.sp))
-            append(placeholder)
-            toAnnotatedString()
-        }
-        return TransformedText(annotatedString, OffsetMapping.Identity)
-    }
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -85,7 +77,6 @@ fun UnderlineTextField(
                 readOnly = readOnly,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-2).dp)
                     .focusable(enabled = !readOnly)
                     .clickable(enabled = !readOnly) {},
                 value = value,
@@ -93,9 +84,44 @@ fun UnderlineTextField(
                 onValueChange = onValueChange,
                 maxLines = maxLines,
                 singleLine = maxLines == 1,
-                visualTransformation = {
-                    if (value.isEmpty()) placeholderVisualTransformation()
-                    else visualTransformation.filter(it)
+                decorationBox = { innerTextField ->
+                    if (withBorder) {
+                        Box(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .border(1.dp, color = LightGray, RoundedCornerShape(4.dp))
+                                .padding(vertical = 7.dp, horizontal = 15.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+
+                            if (value.isEmpty()) {
+                                Text(
+                                    text = placeholder,
+                                    color = LightGray,
+                                    fontSize = 17.sp
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
+                    else{
+                        Box(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (value.isEmpty()) {
+                                Text(
+                                    text = placeholder,
+                                    color = DarkGrey,
+                                    fontSize = 17.sp
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
                 },
                 keyboardActions = keyboardActions,
                 keyboardOptions = keyboardOptions,
@@ -112,83 +138,6 @@ fun UnderlineTextField(
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun UnderlineTextFieldWithBorder(
-    modifier: Modifier = Modifier,
-    readOnly: Boolean = false,
-    value: String,
-    placeholder: String = "",
-    localFocusManager: FocusManager,
-    isUncorrected: Boolean = false,
-    keyboardController: SoftwareKeyboardController? = null,
-    maxLines: Int = 1,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    onDoneKey: (() -> Unit)? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions(
-        onNext = {
-            localFocusManager.moveFocus(FocusDirection.Down)
-        },
-        onDone = {
-            localFocusManager.clearFocus()
-            keyboardController?.hide()
-            onDoneKey?.invoke()
-        }
-    ),
-    onValueChange: (String) -> Unit
-){
-    fun placeholderVisualTransformation(): TransformedText {
-        val annotatedString = AnnotatedString.Builder().run {
-            pushStyle(SpanStyle(color = LightGray, fontSize = 17.sp))
-            append(placeholder)
-            toAnnotatedString()
-        }
-        return TransformedText(annotatedString, OffsetMapping.Identity)
-    }
-    Column(modifier = modifier) {
-
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .border(1.dp, color = LightGray, RoundedCornerShape(4.dp))
-                .padding(vertical = 7.dp, horizontal = 15.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            val customTextSelectionColors = TextSelectionColors(
-                handleColor = DarkBlue,
-                backgroundColor = LightBlue
-            )
-
-            CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-                BasicTextField(
-                    readOnly = readOnly,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .offset(y = (-2).dp)
-                        .focusable(enabled = !readOnly)
-                        .clickable(enabled = !readOnly) {},
-                    value = value,
-                    textStyle = if (isUncorrected) TextStyle(
-                        color = Color.Red,
-                        fontSize = 18.sp
-                    ) else MaterialTheme.typography.body1,
-                    onValueChange = onValueChange,
-                    maxLines = maxLines,
-                    singleLine = maxLines == 1,
-                    visualTransformation = {
-                        if (value.isEmpty()) placeholderVisualTransformation()
-                        else visualTransformation.filter(it)
-                    },
-                    keyboardActions = keyboardActions,
-                    keyboardOptions = keyboardOptions,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
 @Preview(
     showSystemUi = true,
     showBackground = true,
@@ -196,7 +145,7 @@ fun UnderlineTextFieldWithBorder(
 )
 @Composable
 fun PreviewUnderlineTextField() {
-    UnderlineTextFieldWithBorder(
+    UnderlineTextField(
         modifier = Modifier.wrapContentHeight(),
         value = "",
         onValueChange = {  },

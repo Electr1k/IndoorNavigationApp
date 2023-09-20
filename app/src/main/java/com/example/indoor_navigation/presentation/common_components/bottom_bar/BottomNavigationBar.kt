@@ -20,7 +20,6 @@ import com.example.indoor_navigation.ui.theme.DarkBlue
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavHostController,
     labelsAlwaysVisible: Boolean = true,
     onBottomNavItemClick: (BottomBarTab) -> Unit,
     showBottomBar: MutableState<Boolean>,

@@ -10,17 +10,12 @@ import com.example.indoor_navigation.presentation.splash_screen.SplashScreen
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    showBottomBar: MutableState<Boolean>,
     navigateByRoute: (
         route: String,
         popUpRoute: String?,
         isInclusive: Boolean
     ) -> Unit,
 ){
-    fun popBackStack() {
-        showBottomBar.value = true
-        navController.popBackStack()
-    }
 
     NavHost(navController = navController, startDestination = Screen.Splash.route, route = ROOT_ROUTE){
 

@@ -8,7 +8,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.indoor_navigation.presentation.MainScreen
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.ui.theme.IndoorNavigationAppTheme
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.enableRotation
@@ -22,28 +24,9 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             IndoorNavigationAppTheme {
-                // ====   ====   ===    ====
-                //
-                // Вынести во view model!!!!
-                //
-                // ====   ====   ===    ====
-                println("Перерисовываем")
-                val context = LocalContext.current
-                val tileStreamProvider = TileStreamProvider { row, col, zoomLvl ->
-                    println("tiles/$zoomLvl/$row/$col.jpg")
-                    try {
-                        context.assets?.open("tiles/$zoomLvl/$row/$col.jpg")
-                    } catch (e: Exception) {
-                        context.assets?.open("tiles/blank.png")
-                    }
-                }
-                val state: MapState by mutableStateOf(
-                    MapState(5, 3840, 2160, 256).apply {
-                        addLayer(tileStreamProvider)
-                        enableRotation()
-                    }
-                )
-                MainScreen(mapState = state)
+                val vm: MainViewModel = hiltViewModel()
+                vm.setContext(LocalContext.current)
+                MainScreen(vm = vm)
             }
         }
     }

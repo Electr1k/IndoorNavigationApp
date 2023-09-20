@@ -1,6 +1,6 @@
 package com.example.indoor_navigation.presentation.sheet_content
 
-import UnderlineTextFieldWithBorder
+import UnderlineTextField
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -128,12 +128,13 @@ fun RouteSheetContent(
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
-                            UnderlineTextFieldWithBorder(
+                            UnderlineTextField(
                                 modifier = Modifier.wrapContentSize(),
                                 value = fromRoute.value,
                                 onValueChange = {
                                     fromRoute.value = it
                                 },
+                                withBorder = true,
                                 maxLines = 1,
                                 placeholder = "Откуда",
                                 localFocusManager = LocalFocusManager.current,
@@ -148,12 +149,13 @@ fun RouteSheetContent(
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
-                            UnderlineTextFieldWithBorder(
+                            UnderlineTextField(
                                 modifier = Modifier.wrapContentSize(),
                                 value = toRoute.value,
                                 onValueChange = {
                                     toRoute.value = it
                                 },
+                                withBorder = true,
                                 maxLines = 1,
                                 placeholder = "Куда",
                                 localFocusManager = LocalFocusManager.current,
