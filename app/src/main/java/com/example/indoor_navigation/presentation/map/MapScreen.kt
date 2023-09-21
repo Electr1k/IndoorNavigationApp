@@ -12,7 +12,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.W500
 import androidx.compose.ui.text.style.TextAlign
@@ -20,8 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.R
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.presentation.common_components.BottomSheetTop
 import com.example.indoor_navigation.presentation.common_components.WorkInProgressScreen
 import com.example.indoor_navigation.presentation.navigation.Screen
@@ -104,7 +103,11 @@ fun MapScreen(
         }
     ) {
         Box(Modifier.background(Color(0xFFEFEFEF))){
-            MapUI(Modifier.fillMaxSize(), state = vm.state.value)
+            MapUI(Modifier.fillMaxSize(), state = vm.state.value){
+                vm.setFinishMarker(0.5, 0.5)
+                vm.setPositionMarker(0.5, 0.6)
+                vm.addDefaultMarker("0", "Г-303 ",0.5, 0.6)
+            }
             Box(Modifier.zIndex(1f)){
                 Box(
                     modifier = Modifier

@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.R
+import com.example.indoor_navigation.presentation.MainViewModel
 import com.example.indoor_navigation.presentation.common_components.BottomSheetTop
 import com.example.indoor_navigation.presentation.common_components.LocationCard
 import com.example.indoor_navigation.ui.theme.DarkBlue
