@@ -1,6 +1,7 @@
 package com.example.indoor_navigation.presentation.map
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,8 @@ import com.example.indoor_navigation.presentation.navigation.Screen
 import com.example.indoor_navigation.presentation.sheet_content.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ovh.plrapps.mapcompose.api.rotation
+import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.ui.MapUI
 
 
@@ -105,7 +108,7 @@ fun MapScreen(
         Box(Modifier.background(Color(0xFFEFEFEF))){
             MapUI(Modifier.fillMaxSize(), state = vm.state.value){
                 vm.setFinishMarker(0.5, 0.5)
-                vm.setPositionMarker(0.5, 0.6)
+                vm.setPositionMarker(0.5, 0.4)
                 vm.addDefaultMarker("0", "Г-303 ",0.5, 0.6)
             }
             Box(Modifier.zIndex(1f)){

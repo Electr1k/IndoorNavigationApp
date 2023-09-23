@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
@@ -19,11 +20,14 @@ import com.example.indoor_navigation.R
 import ovh.plrapps.mapcompose.api.addLayer
 import ovh.plrapps.mapcompose.api.addMarker
 import ovh.plrapps.mapcompose.api.enableRotation
+import ovh.plrapps.mapcompose.api.getMarkerInfo
 import ovh.plrapps.mapcompose.api.moveMarker
 import ovh.plrapps.mapcompose.api.onLongPress
 import ovh.plrapps.mapcompose.api.onMarkerClick
 import ovh.plrapps.mapcompose.api.onMarkerMove
 import ovh.plrapps.mapcompose.api.onTap
+import ovh.plrapps.mapcompose.api.rotation
+import ovh.plrapps.mapcompose.api.scale
 import ovh.plrapps.mapcompose.api.setScrollOffsetRatio
 import ovh.plrapps.mapcompose.core.TileStreamProvider
 import ovh.plrapps.mapcompose.ui.state.MapState
@@ -83,7 +87,7 @@ class MainViewModel: ViewModel() {
                 Icon(
                     painter = painterResource(id = R.drawable.position_marker),
                     contentDescription = null,
-                    modifier = Modifier.size(35.dp),
+                    modifier = Modifier.size((12 * 2*(1+ state.value.scale)).dp).rotate(state.value.rotation),
                     tint = Color(0xffff0000)
                 )
             }
@@ -103,7 +107,7 @@ class MainViewModel: ViewModel() {
                 Icon(
                     painter = painterResource(id = R.drawable.finish_marker),
                     contentDescription = null,
-                    modifier = Modifier.size(60.dp),
+                    modifier = Modifier.size((20 * 2*(1+ state.value.scale)).dp),
                     tint = Color(0xffff0000)
                 )
             }
